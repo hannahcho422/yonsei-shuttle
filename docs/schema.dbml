@@ -1,0 +1,191 @@
+Enum shuttle_type {
+  시내
+  시외
+}
+
+Enum reservation_status {
+  예약
+  취소
+}
+
+Enum user_role {
+  USER
+  ADMIN
+}
+
+Table "user" {
+  user_id int [pk, increment, note: '사용자 고유 ID']
+  name varchar(100) [not null, note: '사용자 이름']
+  email varchar(100) [not null, unique, note: '사용자 이메일 (로그인 ID)']
+  password varchar(255) [not null, note: '암호화된 비밀번호 (BCrypt)']
+  role user_role [not null, default: 'USER', note: 'USER: 일반 사용자, ADMIN: 관리자']
+  created_at timestamptz [not null, default: `now()`]
+
+  Note: '사용자 (일반 + 관리자 통합)'
+}
+
+Table admin {
+  admin_id int [pk, increment]
+  user_id int [not null, unique, note: '연결된 사용자 ID']
+
+  Note: '관리자 확장 정보 (user 1:1)'
+}
+
+Table notification {
+  notification_id int [pk, increment]
+  admin_id int [not null]
+  title varchar(255) [not null, note: '공지 제목']
+  content text [not null, note: '공지 내용']
+  created_at timestamptz [not null, default: `now()`, note: '작성일시']
+
+  indexes {
+    admin_id [name: 'idx_notification_admin']
+    created_at [name: 'idx_notification_created']
+  }
+
+  Note: '공지사항'
+}
+
+Table shuttle {
+  shuttle_id int [pk, increment]
+  name varchar(100) [not null]
+  type shuttle_type [not null, note: '시내 / 시외 구분']
+  capacity int [not null, default: 45, note: '좌석 수']
+
+  Note: '셔틀 버스'
+}
+
+Table city_shuttle {
+  city_shuttle_id int [pk, increment]
+  shuttle_id int [not null, unique]
+  speed numeric(5,2) [not null, default: 40.00, note: '평균 운행 속도 (km/h)']
+
+  Note: '시내 셔틀 (위치 시뮬레이션 대상)'
+}
+
+Table intercity_shuttle {
+  intercity_shuttle_id int [pk, increment]
+  shuttle_id int [not null, unique]
+
+  Note: '시외 셔틀 (예약 대상)'
+}
+
+Table route {
+  route_id int [pk, increment]
+  shuttle_id int [not null]
+  route_name varchar(255) [not null, note: '노선 이름 (예: 원주역 순환)']
+  direction varchar(50) [note: '방향 (왕복 구분: 등교/하교 등)']
+
+  indexes {
+    shuttle_id [name: 'idx_route_shuttle']
+  }
+
+  Note: '셔틀 노선'
+}
+
+Table stop {
+  stop_id int [pk, increment]
+  stop_name varchar(255) [not null, note: '정류장 이름']
+  latitude numeric(10,7) [not null, note: '위도']
+  longitude numeric(10,7) [not null, note: '경도']
+  image_path varchar(500) [note: '정류장 이미지 경로']
+
+  Note: '정류장'
+}
+
+Table route_stop {
+  route_stop_id int [pk, increment]
+  route_id int [not null]
+  stop_id int [not null]
+  sequence int [not null, note: '정류장 순서 (1, 2, 3...)']
+  arrival_time interval [not null, default: '0 minutes', note: '출발지 대비 소요 시간']
+  prev_stop_id int
+  next_stop_id int
+
+  indexes {
+    (route_id, stop_id) [unique, name: 'uq_route_stop']
+    (route_id, sequence) [unique, name: 'uq_route_seq']
+    (route_id, sequence) [name: 'idx_rs_route']
+  }
+
+  Note: '노선별 경유 정류장'
+}
+
+Table schedule {
+  schedule_id int [pk, increment]
+  route_id int [not null]
+  departure_time time [not null, note: '출발 시각']
+  day_of_week varchar(10) [not null, default: 'MON-FRI', note: '운행 요일 (MON-FRI, SAT, SUN 등)']
+
+  indexes {
+    route_id [name: 'idx_schedule_route']
+    departure_time [name: 'idx_schedule_time']
+  }
+
+  Note: '운행 시간표'
+}
+
+Table seat {
+  seat_id int [pk, increment]
+  intercity_shuttle_id int [not null]
+  seat_num int [not null, note: '좌석 번호']
+
+  indexes {
+    (intercity_shuttle_id, seat_num) [unique, name: 'uq_seat']
+  }
+
+  Note: '시외 셔틀 좌석'
+}
+
+Table reservation {
+  reservation_id int [pk, increment]
+  user_id int [not null]
+  intercity_shuttle_id int [not null]
+  seat_id int [not null]
+  schedule_id int [not null]
+  status reservation_status [not null, default: '예약', note: '예약 / 취소']
+  reserved_at timestamptz [not null, default: `now()`, note: '예약 일시']
+  cancelled_at timestamptz [note: '취소 일시 (취소 시에만 기록)']
+
+  indexes {
+    user_id [name: 'idx_reservation_user']
+    intercity_shuttle_id [name: 'idx_reservation_shuttle']
+    schedule_id [name: 'idx_reservation_schedule']
+    status [name: 'idx_reservation_status']
+  }
+
+  Note: '시외 셔틀 예약'
+}
+
+Table shuttle_location {
+  location_id int [pk, increment]
+  shuttle_id int [not null]
+  latitude numeric(10,7) [not null]
+  longitude numeric(10,7) [not null]
+  heading numeric(5,2) [note: '진행 방향 (0~360도)']
+  speed numeric(5,2) [note: '현재 속도 (km/h)']
+  updated_at timestamptz [not null, default: `now()`, note: '좌표 기록 시각']
+
+  indexes {
+    (shuttle_id, updated_at) [name: 'idx_location_shuttle_time']
+  }
+
+  Note: '셔틀 실시간 위치 (시뮬레이터가 주기적 INSERT)'
+}
+
+Ref: admin.user_id > "user".user_id [delete: cascade]
+Ref: notification.admin_id > admin.admin_id [delete: cascade]
+Ref: city_shuttle.shuttle_id > shuttle.shuttle_id [delete: cascade]
+Ref: intercity_shuttle.shuttle_id > shuttle.shuttle_id [delete: cascade]
+Ref: route.shuttle_id > shuttle.shuttle_id [delete: cascade]
+Ref: route_stop.route_id > route.route_id [delete: cascade]
+Ref: route_stop.stop_id > stop.stop_id [delete: cascade]
+Ref: route_stop.prev_stop_id > stop.stop_id [delete: set null]
+Ref: route_stop.next_stop_id > stop.stop_id [delete: set null]
+Ref: schedule.route_id > route.route_id [delete: cascade]
+Ref: seat.intercity_shuttle_id > intercity_shuttle.intercity_shuttle_id [delete: cascade]
+Ref: reservation.user_id > "user".user_id [delete: cascade]
+Ref: reservation.intercity_shuttle_id > intercity_shuttle.intercity_shuttle_id [delete: cascade]
+Ref: reservation.seat_id > seat.seat_id [delete: cascade]
+Ref: reservation.schedule_id > schedule.schedule_id [delete: cascade]
+Ref: shuttle_location.shuttle_id > shuttle.shuttle_id [delete: cascade]
