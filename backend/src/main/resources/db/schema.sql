@@ -247,6 +247,7 @@ CREATE TABLE reservation (
     intercity_shuttle_id INT                NOT NULL,
     seat_id              INT                NOT NULL,
     schedule_id          INT                NOT NULL,
+    travel_date          DATE               NOT NULL,
     status               reservation_status NOT NULL DEFAULT '예약',
     reserved_at          TIMESTAMPTZ        NOT NULL DEFAULT now(),
     cancelled_at         TIMESTAMPTZ,
@@ -258,10 +259,13 @@ CREATE TABLE reservation (
     CONSTRAINT fk_reservation_seat FOREIGN KEY (seat_id)
         REFERENCES seat (seat_id) ON DELETE CASCADE,
     CONSTRAINT fk_reservation_schedule FOREIGN KEY (schedule_id)
-        REFERENCES schedule (schedule_id) ON DELETE CASCADE
+        REFERENCES schedule (schedule_id) ON DELETE CASCADE,
+
+    CONSTRAINT uq_reservation_seat UNIQUE (seat_id, schedule_id, travel_date)
 );
 
 COMMENT ON TABLE  reservation               IS '시외 셔틀 예약';
+COMMENT ON COLUMN reservation.travel_date   IS '실제 탑승 날짜';
 COMMENT ON COLUMN reservation.status        IS '예약 / 취소';
 COMMENT ON COLUMN reservation.reserved_at   IS '예약 일시';
 COMMENT ON COLUMN reservation.cancelled_at  IS '취소 일시 (취소 시에만 기록)';
@@ -326,6 +330,8 @@ COMMENT ON VIEW v_shuttle_current_location IS '셔틀별 최신 위치 (1건씩)
 -- 6. [순서 컬럼]       route_stop.sequence 추가 (명시적 정류장 순서)
 -- 7. [예약 다건 허용]  reservation.user_id UNIQUE 제거
 -- 8. [취소일 NULL]     reservation.cancel_date NOT NULL → cancelled_at NULLABLE
+-- 13. [탑승일 추가]    reservation.travel_date DATE 추가 (탑승 날짜 구분)
+-- 14. [중복 예약 방지]  UNIQUE (seat_id, schedule_id, travel_date) 제약 추가
 -- 9. [위치 테이블]     location → shuttle_location으로 개선, 셔틀 직접 연결
 -- 10. [PostgreSQL 전환] AUTO_INCREMENT→SERIAL, MEDIUMTEXT→TEXT, ENGINE 제거
 -- 11. [인덱스 추가]    조회 빈도 높은 컬럼에 인덱스 설계

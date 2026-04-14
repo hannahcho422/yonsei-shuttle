@@ -143,6 +143,7 @@ Table reservation {
   intercity_shuttle_id int [not null]
   seat_id int [not null]
   schedule_id int [not null]
+  travel_date date [not null, note: '실제 탑승 날짜']
   status reservation_status [not null, default: '예약', note: '예약 / 취소']
   reserved_at timestamptz [not null, default: `now()`, note: '예약 일시']
   cancelled_at timestamptz [note: '취소 일시 (취소 시에만 기록)']
@@ -152,6 +153,7 @@ Table reservation {
     intercity_shuttle_id [name: 'idx_reservation_shuttle']
     schedule_id [name: 'idx_reservation_schedule']
     status [name: 'idx_reservation_status']
+    (seat_id, schedule_id, travel_date) [unique, name: 'uq_reservation_seat']
   }
 
   Note: '시외 셔틀 예약'

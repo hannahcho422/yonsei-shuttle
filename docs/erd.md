@@ -88,6 +88,7 @@ erDiagram
         int intercity_shuttle_id FK
         int seat_id FK
         int schedule_id FK
+        date travel_date
         reservation_status status
         timestamptz reserved_at
         timestamptz cancelled_at
