@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 /**
  * 노선별 경유 정류장 (+ 순서 + 이전/다음 정류장 linked list)
+ * PostgreSQL INTERVAL 타입은 Hibernate 6.2+ 에서 java.time.Duration으로 자동 매핑됨
  */
 @Entity
 @Table(
