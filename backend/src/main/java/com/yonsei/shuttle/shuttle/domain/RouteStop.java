@@ -2,6 +2,9 @@ package com.yonsei.shuttle.shuttle.domain;
 
 import java.time.Duration;
 
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -53,7 +56,8 @@ public class RouteStop {
     /**
      * 출발지 대비 소요 시간 (PostgreSQL INTERVAL ↔ Java Duration)
      */
-    @Column(name = "arrival_time", nullable = false)
+    @Column(name = "arrival_time", nullable = false, columnDefinition = "interval")
+    @JdbcTypeCode(SqlTypes.INTERVAL_SECOND)
     private Duration arrivalTime;
 
     @ManyToOne(fetch = FetchType.LAZY)
