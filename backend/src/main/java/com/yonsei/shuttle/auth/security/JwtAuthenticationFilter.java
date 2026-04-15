@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * JWT 인증 필터
- * 매 요청마다 실행되어 Authorization 헤더의 JWT를 검증하고 SecurityContext에 인증 정보 설정
+ * 매 HTTP 요청마다 실행되어 Authorization 헤더의 JWT를 검증하고 SecurityContext에 인증 정보 설정
  */
 @Slf4j
 @Component

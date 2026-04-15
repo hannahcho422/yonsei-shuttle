@@ -14,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 
 /**
  * Spring Security 인증 객체 (User 엔티티 래핑)
+ * 역할: @AuthenticationPrincipal 로 Controller에서 꺼내 쓸 수 있음
+ * 실행: SecurityContext에 담기는 객체
  *
  * SecurityContextHolder에 저장되어 모든 Controller/Service에서 접근 가능:
  *   SecurityContextHolder.getContext().getAuthentication().getPrincipal()

@@ -9,7 +9,10 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import com.yonsei.shuttle.auth.security.JwtAuthenticationFilter;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,18 +20,20 @@ import lombok.RequiredArgsConstructor;
  * Spring Security + JWT 설정
  *
  * 인증 없이 허용:
- *   - /api/auth/**
+ *   - /api/auth/**         (회원가입/로그인)
  *   - /api/internal/**     (시뮬레이터 → Backend 위치 수신)
  *   - /swagger-ui/**, /v3/api-docs/**
- *   - /ws/**              (WebSocket 핸드셰이크)
+ *   - /ws/**               (WebSocket 핸드셰이크)
  *
- * 나머지는 JWT 인증 필요
+ * /api/admin/** : ADMIN 권한 필요
+ * 그 외          : JWT 인증 필요
  */
 @Configuration
 @RequiredArgsConstructor
 public class SecurityConfig {
 
     private final UrlBasedCorsConfigurationSource corsConfigurationSource;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -60,25 +65,19 @@ public class SecurityConfig {
                         ).permitAll()
                         .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
-                );
+                )
 
-        // TODO: JwtAuthenticationFilter는 Auth 모듈 작성 후 추가
-        // http.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                // JWT 필터를 UsernamePasswordAuthenticationFilter 앞에 등록
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }
 
-    /**
-     * 비밀번호 암호화: BCrypt
-     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    /**
-     * AuthenticationManager Bean (Auth 서비스에서 주입받아 사용)
-     */
     @Bean
     public AuthenticationManager authenticationManager(
             AuthenticationConfiguration configuration) throws Exception {
