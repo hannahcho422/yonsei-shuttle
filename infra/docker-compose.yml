@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: yonsei-postgres
+    environment:
+      POSTGRES_DB: yonsei_shuttle
+      POSTGRES_USER: shuttle
+      POSTGRES_PASSWORD: shuttle1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shuttle -d yonsei_shuttle"]
+      interval: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: yonsei-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
