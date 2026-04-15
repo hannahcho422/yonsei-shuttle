@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 /**
  * 로그인 시 Spring Security가 호출하는 서비스
  * 이메일로 User 조회 후 CustomUserDetails로 래핑
+ * 역할: DB에서 이메일로 User 조회
+ * 실행: 로그인 시 1회 (AuthenticationManager가 호출)
  */
 @Service
 @RequiredArgsConstructor
