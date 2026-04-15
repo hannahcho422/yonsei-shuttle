@@ -33,7 +33,7 @@ public class AuthService {
     /**
      * 회원가입
      */
-    @Transactional
+    @Transactional  // 메서드 내부에서 쓰기 작업 가능, 예외 발생 시 롤백
     public UserResponse signup(SignupRequest request) {
         // 이메일 중복 체크
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -60,7 +60,7 @@ public class AuthService {
     /**
      * 로그인
      */
-    @Transactional(readOnly = true)
+    @Transactional(readOnly = true)     // 읽기 전용 최적화 (Hibernate 더티체킹 비활성화로 성능 향상)
     public TokenResponse login(LoginRequest request) {
         // 이메일로 사용자 조회
         User user = userRepository.findByEmail(request.getEmail())
