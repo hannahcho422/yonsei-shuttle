@@ -1,0 +1,21 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres:5432/yonsei_shuttle?currentSchema=yonsei_shuttle
+    username: ${DB_USERNAME:shuttle}
+    password: ${DB_PASSWORD:shuttle1234}
+
+  data:
+    redis:
+      host: ${REDIS_HOST:redis}
+      port: ${REDIS_PORT:6379}
+
+  jpa:
+    show-sql: false
+
+jwt:
+  secret: ${JWT_SECRET}
+
+logging:
+  level:
+    com.yonsei.shuttle: INFO
+    root: WARN

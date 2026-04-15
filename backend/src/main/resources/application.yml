@@ -1,0 +1,43 @@
+spring:
+  application:
+    name: yonsei-shuttle
+
+  profiles:
+    active: dev
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/yonsei_shuttle?currentSchema=yonsei_shuttle
+    username: shuttle
+    password: shuttle1234
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        default_schema: yonsei_shuttle
+        jdbc:
+          lob:
+            non_contextual_creation: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  port: 8080
+
+jwt:
+  secret: yonsei-shuttle-super-secret-key-change-this-in-production-minimum-256-bits
+  expiration: 3600000   # 1시간 (ms)
+  refresh-expiration: 604800000   # 7일 (ms)
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /v3/api-docs
