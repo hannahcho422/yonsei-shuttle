@@ -6,7 +6,8 @@ spring:
     active: dev
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/yonsei_shuttle?currentSchema=yonsei_shuttle
+    # PostgreSQL Custom ENUM 타입을 String으로 주고받으려면 Hibernate에 "stringtype=unspecified" 옵션 필요
+    url: jdbc:postgresql://localhost:5432/yonsei_shuttle?currentSchema=yonsei_shuttle&stringtype=unspecified
     username: shuttle
     password: shuttle1234
     driver-class-name: org.postgresql.Driver
