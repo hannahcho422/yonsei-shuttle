@@ -1,0 +1,226 @@
+/* ===== 공통 ===== */
+body {
+    padding-top: 70px !important;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  }
+  
+  /* ===== Navbar ===== */
+  .custom-navbar {
+    background-color: #ffffff;
+    border-bottom: 2px solid #e0e0e0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1030;
+  }
+  
+  .company-name {
+    font-weight: 700;
+    font-size: 1.6rem;
+    text-decoration: none;
+    color: #000000 !important;
+    cursor: pointer;
+  }
+  
+  .company-name:hover {
+    color: #3366CC !important;
+  }
+  
+  .company-logo {
+    width: 50px;
+    height: auto;
+    margin-right: 10px;
+  }
+  
+  .navbar .navbar-nav .nav-link,
+  .navbar .navbar-brand,
+  .navbar .dropdown-item {
+    color: #000000 !important;
+  }
+  
+  .navbar .navbar-nav .nav-link:hover,
+  .navbar .dropdown-item:hover {
+    color: #007bff !important;
+    background-color: #f8f9fa;
+  }
+  
+  /* 네비게이션 하단 밑줄 애니메이션 */
+  .navbar .navbar-nav .nav-link {
+    position: relative;
+  }
+  
+  .navbar .navbar-nav .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: #007bff;
+    transition: width 0.3s ease;
+  }
+  
+  .navbar .navbar-nav .nav-link:hover::after,
+  .navbar .navbar-nav .nav-link.router-link-active::after {
+    width: 100%;
+  }
+  
+  /* 드롭다운 캐럿 아이콘 제거 */
+  .navbar .navbar-nav .dropdown-toggle::after {
+    border: none;
+  }
+  
+  /* ===== Home 페이지 카드 ===== */
+  .schedule .single-schedule {
+    position: relative;
+    text-align: left;
+    border-radius: 5px;
+    background: #1A76D1;
+    transition: all 0.3s ease-out;
+    height: 280px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .schedule .single-schedule .inner {
+    overflow: visible;
+    position: relative;
+    padding: 30px;
+  }
+  
+  .schedule .single-schedule:hover {
+    transform: translateY(-5px);
+  }
+  
+  .schedule .single-schedule h4 {
+    font-size: 20px;
+    font-weight: 600;
+    color: #fff;
+    margin-top: 13px;
+  }
+  
+  .schedule .single-schedule p {
+    color: #fff;
+    margin-top: 22px;
+    flex-grow: 1;
+  }
+  
+  /* ===== 카드 공통 ===== */
+  .card-hover {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.05);
+  }
+  
+  .card-hover:hover {
+    box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
+  }
+  
+  .card-hover h4 {
+    color: #3366CC;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+  }
+  
+  /* ===== 섹션 헤더 ===== */
+  .section-header {
+    margin-bottom: 20px;
+  }
+  
+  .section-subtitle {
+    color: #8C8C8C;
+  }
+  
+  /* ===== 로그인/회원가입 ===== */
+  .auth-container {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  /* ===== Footer ===== */
+  .footer {
+    position: relative;
+    margin-top: 45px;
+    padding-top: 90px;
+    background: #1A76D1;
+  }
+  
+  .footer h2 {
+    position: relative;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    color: #ffffff !important;
+  }
+  
+  .footer h2::after {
+    position: absolute;
+    content: "";
+    width: 45px;
+    height: 2px;
+    bottom: 0;
+    left: 0;
+    background: #ffffff;
+  }
+  
+  .footer p, .footer a, .footer li {
+    color: #ffffff;
+  }
+  
+  .footer a:hover {
+    color: #092a49;
+  }
+  
+  .footer ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .footer li {
+    margin-bottom: 12px;
+    font-size: 12px;
+  }
+  
+  .footer li a:hover {
+    padding-left: 8px;
+  }
+  
+  .footer .copyright {
+    padding: 0 30px;
+  }
+  
+  .footer .copyright .row {
+    padding-top: 25px;
+    padding-bottom: 25px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+  }
+  
+  /* ===== 반응형 ===== */
+  @media (max-width: 768px) {
+    .company-name {
+      font-size: 1.2rem;
+    }
+  
+    .card-hover {
+      width: 100%;
+      height: auto;
+    }
+  }
