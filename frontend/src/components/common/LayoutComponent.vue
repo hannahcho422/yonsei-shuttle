@@ -1,5 +1,14 @@
 <template>
   <div>
-    <router-view />
+    <HeaderComponent />
+    <main>
+      <router-view />
+    </main>
+    <FooterComponent />
   </div>
 </template>
+
+<script setup>
+import HeaderComponent from './HeaderComponent.vue'
+import FooterComponent from './FooterComponent.vue'
+</script>
