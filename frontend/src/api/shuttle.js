@@ -31,5 +31,8 @@ export const shuttleApi = {
   },
   getSchedulesByRouteAndDay(routeId, dayOfWeek) {
     return api.get(`/shuttles/routes/${routeId}/schedules/${dayOfWeek}`)
+  },
+  getIntercityShuttleId(shuttleId) {
+    return api.get(`/shuttles/${shuttleId}/intercity-id`)
   }
 }
