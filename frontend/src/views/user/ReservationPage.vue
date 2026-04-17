@@ -198,19 +198,14 @@ async function findIntercityShuttleId(shuttleId) {
   // 또는: shuttleId=2 → intercity_shuttle_id=1 (시외셔틀 잠실)
   // Backend에 /api/shuttles/{id}/intercity 엔드포인트를 추가하면 정확해짐.
   // 지금은 단순화: 좌석 1건 조회 시도하여 존재 여부 확인
-  for (let guessId = 1; guessId <= 10; guessId++) {
-    try {
-      const res = await reservationApi.getAvailableSeats(guessId, 1, '2000-01-01')
-      if (res.data.data.length > 0) {
-        intercityIdCache[shuttleId] = guessId
-        return guessId
-      }
-    } catch (e) {
-      continue
-    }
+  try {
+    const res = await shuttleApi.getIntercityShuttleId(shuttleId)
+    intercityIdCache[shuttleId] = res.data.data
+    return res.data.data
+  } catch (e) {
+    intercityIdCache[shuttleId] = null
+    return null
   }
-  intercityIdCache[shuttleId] = null
-  return null
 }
 
 // ===== 좌석 모달 =====
