@@ -115,4 +115,12 @@ public class ShuttleController {
             @PathVariable String dayOfWeek) {
         return ResponseEntity.ok(ApiResponse.success(shuttleService.getSchedulesByRouteAndDay(routeId, dayOfWeek)));
     }
+
+    @Operation(summary = "시외 셔틀 내부 ID 조회 (예약용)")
+    @GetMapping("/{shuttleId}/intercity-id")
+    public ResponseEntity<ApiResponse<Integer>> getIntercityShuttleId(
+            @PathVariable Integer shuttleId) {
+        return ResponseEntity.ok(
+                ApiResponse.success(shuttleService.getIntercityShuttleIdByShuttleId(shuttleId)));
+    }
 }
