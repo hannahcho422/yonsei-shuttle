@@ -301,6 +301,16 @@ public class ShuttleService {
         log.info("시간표 삭제: id={}", scheduleId);
     }
 
+    /**
+     * shuttle_id로 intercity_shuttle_id 조회
+     */
+    @Transactional(readOnly = true)
+    public Integer getIntercityShuttleIdByShuttleId(Integer shuttleId) {
+        return intercityShuttleRepository.findByShuttle_ShuttleId(shuttleId)
+                .map(com.yonsei.shuttle.shuttle.domain.IntercityShuttle::getIntercityShuttleId)
+                .orElseThrow(() -> new CustomException(ErrorCode.SHUTTLE_NOT_FOUND));
+    }
+
     // =========================================================
     // 공통 헬퍼 메서드 (private)
     // =========================================================
