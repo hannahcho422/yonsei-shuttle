@@ -167,16 +167,16 @@ LocationService (Redis에서 현재 좌표 조회)
 ┌─────────────────────────────────────────┐
 │ Presentation (Controller)               │
 │ Auth / Shuttle / Reservation / Location │
-│ Notification / Admin                     │
+│ Notification / Admin                    │
 ├─────────────────────────────────────────┤
-│ Service (Business Logic)                 │
+│ Service (Business Logic)                │
 │ @Transactional, Cross-entity 로직        │
 ├─────────────────────────────────────────┤
-│ Repository (Spring Data JPA)             │
-│ JpaRepository + Query Method             │
+│ Repository (Spring Data JPA)            │
+│ JpaRepository + Query Method            │
 ├─────────────────────────────────────────┤
-│ Domain (Entity)                          │
-│ User/Admin, Shuttle/Route/Stop,          │
+│ Domain (Entity)                         │
+│ User/Admin, Shuttle/Route/Stop,         │
 │ Reservation/Seat, ShuttleLocation 등     │
 └─────────────────────────────────────────┘
 ```
@@ -533,7 +533,3 @@ http://localhost/swagger-ui/index.html
 - GitHub: [@hannahcho](https://github.com/hannahcho)
 
 ---
-
-## 📝 License
-
-이 프로젝트는 포트폴리오 용도로 작성되었습니다.
