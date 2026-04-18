@@ -111,7 +111,7 @@
 ---
 
 ## 🏗️ 시스템 아키텍처
-<img src="docs/architecture.png" alt="System Architecture" width="600">
+<img src="docs/architecture.png" alt="System Architecture" width="500">
 
 ### 배포 구성
 
