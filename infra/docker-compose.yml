@@ -1,4 +1,68 @@
 services:
+  # ===== Nginx Reverse Proxy =====
+  nginx:
+    image: nginx:alpine
+    container_name: yonsei-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
+
+  # ===== Frontend (Vue + Nginx) =====
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: yonsei-shuttle-frontend
+    container_name: yonsei-frontend
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  # ===== Backend (Spring Boot) =====
+  backend:
+    build:
+      context: ../backend
+      dockerfile: Dockerfile
+    image: yonsei-shuttle-backend
+    container_name: yonsei-backend
+    expose:
+      - "8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/yonsei_shuttle?currentSchema=yonsei_shuttle&stringtype=unspecified
+      SPRING_DATASOURCE_USERNAME: shuttle
+      SPRING_DATASOURCE_PASSWORD: shuttle1234
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_PROFILES_ACTIVE: dev
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # ===== Python Simulator =====
+  simulator:
+    build:
+      context: ../simulator
+      dockerfile: Dockerfile
+    image: yonsei-shuttle-simulator
+    container_name: yonsei-simulator
+    environment:
+      API_BASE_URL: http://backend:8080
+      UPDATE_INTERVAL_SECONDS: "3"
+      SIMULATION_SPEED_MULTIPLIER: "10.0"
+      LOG_LEVEL: INFO
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # ===== PostgreSQL =====
   postgres:
     image: postgres:16
     container_name: yonsei-postgres
@@ -15,7 +79,9 @@ services:
       test: ["CMD-SHELL", "pg_isready -U shuttle -d yonsei_shuttle"]
       interval: 5s
       retries: 5
+    restart: unless-stopped
 
+  # ===== Redis =====
   redis:
     image: redis:7-alpine
     container_name: yonsei-redis
@@ -25,6 +91,7 @@ services:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       retries: 5
+    restart: unless-stopped
 
 volumes:
   postgres_data:
