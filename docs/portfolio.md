@@ -41,6 +41,8 @@
 
 ## 시스템 아키텍처
 
+<img src="architecture.png" alt="System Architecture" width="600">
+
 - **배포 아키텍처**
   - 외부 사용자 → Cloudflare (HTTPS + DDoS 방어) → Cloudflare Tunnel (암호화 터널) → Raspberry Pi 4
   - Pi 내부에서 cloudflared 데몬이 Nginx(80) 로 트래픽 전달, 외부에 노출되는 포트 0개
@@ -59,11 +61,26 @@
 
 ## 백엔드 구조 설계
 
-- **도메인 모델링 (13개 엔티티)**
-  - User/Admin: 공통 필드를 `user`에 두고 관리자 전용 정보는 `admin` 테이블로 1:1 확장
-  - Shuttle 서브타입: 공통 `shuttle` 테이블 + `city_shuttle` / `intercity_shuttle` 확장(Table Inheritance) 구조로 타입별 추가 속성(평균 속도 등) 분리
-  - Route - RouteStop - Stop: 노선별 경유 정류장의 순서(`sequence`)와 출발지 대비 소요 시간(`arrival_time INTERVAL`)을 명시적으로 모델링
+<img src="erd.png" alt="ERD" width="600">
+
+- **ERD 구성 (5개 도메인 그룹, 13개 엔티티)**
+  - **사용자 도메인**: `user`(공통) - `admin`(확장) - `notification`(관리자 작성)
+  - **셔틀 도메인**: `shuttle`(공통) - `city_shuttle` / `intercity_shuttle`(타입별 확장)
+  - **노선 도메인**: `route` - `route_stop`(N:M + 순서) - `stop`, `schedule`(운행 시간표)
+  - **예약 도메인**: `seat`(시외 셔틀 좌석) - `reservation`(예약, `travel_date` 포함)
+  - **위치 도메인**: `shuttle_location`(실시간 위치 이력)
+
+- **주요 관계**
+  - `user 1:1 admin`: 일반 사용자와 관리자를 분리하되 공통 필드는 재사용 (role 컬럼 + 확장 테이블)
+  - `shuttle 1:1 city_shuttle / intercity_shuttle`: 타입별 차별 속성(평균 속도 vs 좌석)을 각각 분리
+  - `route N:M stop` (through `route_stop`): 하나의 정류장이 여러 노선에 소속될 수 있는 다대다 관계를 중간 테이블로 해소하며, `sequence`(정류장 순서)와 `arrival_time`(출발지 대비 누적 소요 시간)을 중간 테이블 속성으로 표현
+  - `reservation`은 `user`, `intercity_shuttle`, `seat`, `schedule` 4개 엔티티를 참조하는 교차 테이블 형태로, 예약 시점의 모든 컨텍스트(누가·어떤 셔틀의·어떤 좌석을·어떤 스케줄에) 보존
+
+- **도메인 모델링 설계 포인트**
   - Reservation: `travel_date` 컬럼을 분리해 반복 운행 시간표에 대해 날짜별 예약이 가능하도록 설계, `UNIQUE (seat_id, schedule_id, travel_date)` 제약으로 중복 예약을 DB 레벨에서 방지
+  - RouteStop: `sequence` + `prev_stop_id` / `next_stop_id` Linked List 컬럼을 함께 두어 순서 조회와 인접 정류장 조회 양쪽을 최적화
+  - ShuttleLocation: 모든 좌표 이력을 보존하고 최신 위치는 `v_shuttle_current_location` VIEW(`DISTINCT ON shuttle_id ... ORDER BY updated_at DESC`)로 조회하여 조회 쿼리 단순화
+  - ENUM 타입: `shuttle_type`(시내/시외), `reservation_status`(예약/취소), `user_role`(USER/ADMIN) 을 PostgreSQL 네이티브 ENUM으로 선언하여 애플리케이션 밖에서도 값 제약 보장
 
 - **API 설계**
   - REST API 약 40개를 Auth / Shuttle / Reservation / Location / Notification / Admin / Internal 7개 도메인으로 분리
