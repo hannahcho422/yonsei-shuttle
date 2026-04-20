@@ -303,14 +303,14 @@ cd infra
 docker compose up -d --build
 ```
 
-처음 실행 시 이미지 빌드에 약 5~10분 소요됩니다.
+처음 실행 시 이미지 빌드에 약 5~10분 소요된다.
 
 ### 3) 서비스 확인
 ```bash
 docker compose ps
 ```
 
-모든 서비스가 `Up` 상태여야 합니다.
+모든 서비스가 `Up` 상태여야 한다.
 
 ### 4) 접속
 | 서비스 | URL |
@@ -369,7 +369,7 @@ python3 main.py
 
 ## 📚 API 문서
 
-전체 API는 **Swagger UI**에서 확인할 수 있습니다:
+전체 API는 **Swagger UI**에서 확인할 수 있다:
 
 ```
 http://localhost/swagger-ui/index.html
@@ -478,7 +478,7 @@ http://localhost/swagger-ui/index.html
 
 ### 라즈베리파이 4 + Cloudflare Tunnel
 
-본 프로젝트는 개인 소유 **Raspberry Pi 4 (Ubuntu Server 22.04)** 에 Docker Compose로 배포되어 있으며, **Cloudflare Tunnel**을 통해 외부 공개됩니다.
+본 프로젝트는 개인 **Raspberry Pi 4 (Ubuntu Server 22.04)** 에 Docker Compose로 배포되어 있으며, **Cloudflare Tunnel**을 통해 외부 공개된다.
 
 **배포 특징**
 - 외부에 직접 노출되는 포트 **0개** (Cloudflare Tunnel이 유일한 진입점)
