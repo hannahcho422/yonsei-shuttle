@@ -6,9 +6,7 @@
             <div class="footer-contact">
               <h2>연세셔틀</h2>
               <p><i class="fa fa-map-marker-alt"></i> 강원특별자치도 원주시 연세대길 1</p>
-              <p><i class="fa fa-phone-alt"></i> 대표번호: 033-XXX-XXXX</p>
-              <p><i class="fa fa-phone-alt"></i> 민원담당자 (통학버스 사무소장) : 033-XXX-XXXX</p>
-              <p><i class="fa fa-envelope"></i> contact@yonsei-shuttle.example</p>
+              <p><i class="fa fa-info-circle"></i> 연세대학교 미래캠퍼스 셔틀 안내</p>
             </div>
           </div>
           <div class="col-lg-3">
