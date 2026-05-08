@@ -1,29 +1,6 @@
 services:
-  # ===== Nginx Reverse Proxy =====
-  nginx:
-    image: nginx:alpine
-    container_name: yonsei-nginx
-    ports:
-      - "80:80"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - frontend
-      - backend
-    restart: unless-stopped
+  # ...
 
-  # ===== Frontend (Vue + Nginx) =====
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    image: yonsei-shuttle-frontend
-    container_name: yonsei-frontend
-    expose:
-      - "80"
-    restart: unless-stopped
-
-  # ===== Backend (Spring Boot) =====
   backend:
     build:
       context: ../backend
@@ -34,11 +11,12 @@ services:
       - "8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/yonsei_shuttle?currentSchema=yonsei_shuttle&stringtype=unspecified
-      SPRING_DATASOURCE_USERNAME: shuttle
-      SPRING_DATASOURCE_PASSWORD: changeme
+      SPRING_DATASOURCE_USERNAME: ${DB_USERNAME:-shuttle}
+      SPRING_DATASOURCE_PASSWORD: ${DB_PASSWORD}
       SPRING_DATA_REDIS_HOST: redis
       SPRING_DATA_REDIS_PORT: 6379
       SPRING_PROFILES_ACTIVE: dev
+      JWT_SECRET: ${JWT_SECRET}
     depends_on:
       postgres:
         condition: service_healthy
@@ -46,52 +24,22 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # ===== Python Simulator =====
-  simulator:
-    build:
-      context: ../simulator
-      dockerfile: Dockerfile
-    image: yonsei-shuttle-simulator
-    container_name: yonsei-simulator
-    environment:
-      API_BASE_URL: http://backend:8080
-      UPDATE_INTERVAL_SECONDS: "3"
-      SIMULATION_SPEED_MULTIPLIER: "10.0"
-      LOG_LEVEL: INFO
-    depends_on:
-      - backend
-    restart: unless-stopped
+  # ...
 
-  # ===== PostgreSQL =====
   postgres:
     image: postgres:16
     container_name: yonsei-postgres
     environment:
-      POSTGRES_DB: yonsei_shuttle
-      POSTGRES_USER: shuttle
-      POSTGRES_PASSWORD: changeme
+      POSTGRES_DB: ${DB_NAME:-yonsei_shuttle}
+      POSTGRES_USER: ${DB_USERNAME:-shuttle}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ../backend/src/main/resources/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U shuttle -d yonsei_shuttle"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-shuttle} -d ${DB_NAME:-yonsei_shuttle}"]
       interval: 5s
       retries: 5
     restart: unless-stopped
-
-  # ===== Redis =====
-  redis:
-    image: redis:7-alpine
-    container_name: yonsei-redis
-    ports:
-      - "6379:6379"
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 5s
-      retries: 5
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
