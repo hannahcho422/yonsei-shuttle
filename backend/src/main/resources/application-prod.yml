@@ -1,9 +1,8 @@
 spring:
   datasource:
-    # PostgreSQL Custom ENUM 타입을 String으로 주고받으려면 Hibernate에 "stringtype=unspecified" 옵션이 필요
-    url: jdbc:postgresql://localhost:5432/yonsei_shuttle?currentSchema=yonsei_shuttle&stringtype=unspecified
+    url: jdbc:postgresql://postgres:5432/yonsei_shuttle?currentSchema=yonsei_shuttle&stringtype=unspecified
     username: ${DB_USERNAME:shuttle}
-    password: ${DB_PASSWORD:changeme}
+    password: ${DB_PASSWORD}    # ← fallback 제거 (없으면 시작 실패하게)
 
   data:
     redis:
@@ -14,7 +13,7 @@ spring:
     show-sql: false
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret: ${JWT_SECRET}    # ← fallback 없음
 
 logging:
   level:
