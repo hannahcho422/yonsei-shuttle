@@ -38,3 +38,9 @@ out/
 
 ### Claude ###
 .claude/
+
+### Environment variables ###
+.env
+.env.local
+.env.*.local
+infra/.env
