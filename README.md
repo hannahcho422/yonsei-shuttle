@@ -529,6 +529,6 @@ http://localhost/swagger-ui/index.html
 ## 👤 Author
 
 **Hannah Cho**
-- GitHub: [@hannahcho](https://github.com/hannahcho422)
+- GitHub: [@hannahcho422](https://github.com/hannahcho422)
 
 ---
