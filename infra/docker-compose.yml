@@ -1,6 +1,29 @@
 services:
-  # ...
+  # ===== Nginx Reverse Proxy =====
+  nginx:
+    image: nginx:alpine
+    container_name: yonsei-nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+    restart: unless-stopped
 
+  # ===== Frontend (Vue + Nginx) =====
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    image: yonsei-shuttle-frontend
+    container_name: yonsei-frontend
+    expose:
+      - "80"
+    restart: unless-stopped
+
+  # ===== Backend (Spring Boot) =====
   backend:
     build:
       context: ../backend
@@ -24,8 +47,23 @@ services:
         condition: service_healthy
     restart: unless-stopped
 
-  # ...
+  # ===== Python Simulator =====
+  simulator:
+    build:
+      context: ../simulator
+      dockerfile: Dockerfile
+    image: yonsei-shuttle-simulator
+    container_name: yonsei-simulator
+    environment:
+      API_BASE_URL: http://backend:8080
+      UPDATE_INTERVAL_SECONDS: "3"
+      SIMULATION_SPEED_MULTIPLIER: "10.0"
+      LOG_LEVEL: INFO
+    depends_on:
+      - backend
+    restart: unless-stopped
 
+  # ===== PostgreSQL =====
   postgres:
     image: postgres:16
     container_name: yonsei-postgres
@@ -43,3 +81,18 @@ services:
       interval: 5s
       retries: 5
     restart: unless-stopped
+
+  # ===== Redis =====
+  redis:
+    image: redis:7-alpine
+    container_name: yonsei-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
